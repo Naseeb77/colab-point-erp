@@ -1,0 +1,20 @@
+{
+  "name": "CoLab Point",
+  "short_name": "CoLab",
+  "description": "CoLab Point workspace management",
+  "start_url": "/#/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6f5f0",
+  "theme_color": "#1d1c19",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Check-in desk", "url": "/#/checkin" },
+    { "name": "Scan a form", "url": "/#/scan" },
+    { "name": "Record payment", "url": "/#/payments" }
+  ]
+}

@@ -30,15 +30,57 @@ export function fillTemplate(body, vars) {
   return String(body || '').replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? '');
 }
 
-export function badge(status) {
+export function badge(status, label) {
   const map = {
+    present: 'green', absent: 'red', half_day: 'amber', leave: 'violet', approved: 'green', rejected: 'gray',
+    requested: 'amber', hot: 'red', warm: 'amber', cold: 'blue', nurture: 'violet', on_leave: 'violet', todo: 'gray', review: 'violet', backlog: 'gray',
+    low: 'gray', normal: 'blue', high: 'amber', urgent: 'red', closed: 'gray',
     active: 'green', paid: 'green', confirmed: 'green', done: 'green', won: 'green', available: 'green', resolved: 'green', completed: 'green',
     partial: 'amber', upcoming: 'blue', pending: 'amber', paused: 'amber', contacted: 'blue', tour_scheduled: 'blue', proposal: 'blue',
     in_progress: 'blue', occupied: 'blue', reserved: 'blue', new: 'blue', open: 'amber', lead: 'blue',
     unpaid: 'amber', overdue: 'red', expired: 'red', blocked: 'red', lost: 'red', cancelled: 'gray', void: 'gray', left: 'gray', maintenance: 'gray', inactive: 'gray',
   };
-  return `<span class="badge ${map[status] || 'gray'}">${esc(String(status || '').replace(/_/g, ' '))}</span>`;
+  return `<span class="badge ${map[status] || 'gray'}">${esc(label ?? cap(String(status || '').replace(/_/g, ' ')))}</span>`;
 }
+export const cap = (s) => String(s || '').charAt(0).toUpperCase() + String(s || '').slice(1);
+export const initials = (n) => String(n || '?').trim().split(/\s+/).slice(0, 2).map((x) => x[0]).join('').toUpperCase();
+
+export function pageHead(title, sub = '', actionsHtml = '') {
+  return `<div class="page-head"><div><h1>${esc(title)}</h1>${sub ? `<p>${sub}</p>` : ''}</div><div class="actions">${actionsHtml}</div></div>`;
+}
+
+export function downloadCsv(filename, rows, cols) {
+  const line = (a) => a.map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',');
+  const blob = new Blob(['﻿' + [line(cols.map((c) => c[1])), ...rows.map((r) => line(cols.map((c) => (typeof c[0] === 'function' ? c[0](r) : r[c[0]]))))].join('\n')], { type: 'text/csv' });
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: filename });
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+// date helpers (YYYY-MM-DD strings in Pakistan time)
+export const addDays = (ymd, n) => { const d = new Date(ymd + 'T12:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+export function periodRange(key, from, to) {
+  const t = today();
+  const m0 = t.slice(0, 8) + '01';
+  const dow = (new Date(t + 'T12:00:00').getDay() + 6) % 7;
+  switch (key) {
+    case 'today': return [t, t];
+    case 'week': return [addDays(t, -dow), t];
+    case 'month': return [m0, t];
+    case 'last_month': { const lm = new Date(m0 + 'T12:00:00'); lm.setMonth(lm.getMonth() - 1); const s = lm.toISOString().slice(0, 10); return [s, addDays(m0, -1)]; }
+    case 'year': return [t.slice(0, 4) + '-01-01', t];
+    case 'custom': return [from || m0, to || t];
+    default: return [m0, t];
+  }
+}
+export function pills(name, opts, current, label = '') {
+  return `<div class="pills" data-pills="${name}">${label ? `<span>${esc(label)}</span>` : ''}${opts.map(([v, l, n]) => `<button class="pill ${v === current ? 'on' : ''}" data-v="${esc(v)}">${esc(l)}${n !== undefined ? `<span class="n">${n}</span>` : ''}</button>`).join('')}</div>`;
+}
+export function seg(name, opts, current, cls = '') {
+  return `<div class="seg ${cls}" data-seg="${name}">${opts.map(([v, l]) => `<button type="button" class="${v === current ? 'on' : ''}" data-v="${esc(v)}">${esc(l)}</button>`).join('')}</div>`;
+}
+export const greeting = () => { const h = Number(new Date().toLocaleString('en-GB', { hour: '2-digit', hour12: false, timeZone: TZ })); return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'; };
+export const longDate = (d = new Date()) => d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: TZ });
+export const monthLabel = (ym) => new Date(ym.slice(0, 7) + '-01T12:00:00').toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
 
 let toastTimer;
 export function toast(msg, type = 'ok') {
@@ -50,10 +92,10 @@ export function toast(msg, type = 'ok') {
   toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-export function modal(title, bodyHtml, { wide = false } = {}) {
+export function modal(title, bodyHtml, { wide = false, top = false } = {}) {
   closeModal();
   const wrap = document.createElement('div');
-  wrap.className = 'modal-wrap';
+  wrap.className = `modal-wrap ${top ? 'top' : ''}`;
   wrap.innerHTML = `<div class="modal ${wide ? 'wide' : ''}" role="dialog" aria-modal="true">
     <div class="modal-head"><h3>${esc(title)}</h3><button class="icon-btn" data-close aria-label="Close">✕</button></div>
     <div class="modal-body">${bodyHtml}</div></div>`;

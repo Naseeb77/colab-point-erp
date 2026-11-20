@@ -3,6 +3,7 @@ import { $, esc, money, fmtDate, fmtDateTime, today, table, empty, toast, guard,
 import { templates, can } from '../state.js';
 
 const METHODS = [['cash', 'Cash'], ['bank_transfer', 'Bank transfer'], ['jazzcash', 'JazzCash'], ['easypaisa', 'Easypaisa'], ['card', 'Card'], ['cheque', 'Cheque'], ['other', 'Other']];
+export { addExpense };
 
 export async function reminderText(name, inv) {
   const t = await templates();
@@ -36,11 +37,11 @@ export function recordPayment(inv, onDone) {
 
 function newInvoice(onDone) {
   const md = modal('New invoice', `<form class="form grid">
-    ${field('who', 'Bill to', { options: [['member', 'Coworking member'], ['client', 'Agency / software client']] })}
-    <label class="fld"><span>Search *</span><input name="q" placeholder="Name or phone" autocomplete="off" required><div class="pick" id="pick"></div></label>
-    ${field('department', 'Department', { options: [['coworking', 'Coworking'], ['marketing', 'Marketing'], ['software', 'Software house']] })}
+    <input type="hidden" name="who" value="member">
+    <label class="fld"><span>Member *</span><input name="q" placeholder="Name or phone" autocomplete="off" required><div class="pick" id="pick"></div></label>
+    <input type="hidden" name="department" value="coworking">
     ${field('due_date', 'Due date', { type: 'date', value: today(), required: true })}
-    ${field('description', 'Description', { required: true, span: 2, placeholder: 'e.g. Day pass, meeting room 2 hours, website design (50%)' })}
+    ${field('description', 'Description', { required: true, span: 2, placeholder: 'e.g. Day pass, meeting room 2 hours, locker, late fee' })}
     ${field('quantity', 'Quantity', { type: 'number', value: 1, step: '0.5' })}
     ${field('unit_price', 'Unit price (Rs)', { type: 'number', required: true })}
     ${field('discount', 'Discount (Rs)', { type: 'number', value: 0 })}
@@ -62,7 +63,6 @@ function newInvoice(onDone) {
     const b = e.target.closest('button[data-id]'); if (!b) return;
     picked = b.dataset.id; f.q.value = b.textContent.trim(); $('#pick', md).innerHTML = '';
   };
-  f.who.onchange = () => { picked = null; f.q.value = ''; f.department.value = f.who.value === 'member' ? 'coworking' : 'software'; };
   f.onsubmit = (e) => {
     e.preventDefault();
     if (!picked) return toast('Pick a customer from the list', 'err');
@@ -97,8 +97,8 @@ function addExpense(onDone) {
 }
 
 export default async function billing({ view, setTitle, actions, rerender }) {
-  setTitle('Billing');
-  actions(`<button class="btn" id="exp">+ Expense</button><button class="btn primary" id="inv">+ Invoice</button>`);
+  setTitle('Invoices & dues', 'Unpaid invoices, reminders and recent activity');
+  actions(`<a class="btn" href="#/payments">All payments</a><button class="btn" id="exp">+ Expense</button><button class="btn dark" id="inv">+ Invoice</button>`);
   const monthStart = today().slice(0, 8) + '01';
   const [due, queue, pays, exps] = await Promise.all([
     db.select('v_outstanding', { select: '*', order: 'due_date.asc' }),

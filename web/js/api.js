@@ -99,6 +99,29 @@ async function request(method, path, { body, headers = {}, prefer } = {}) {
   return data;
 }
 
+export const storage = {
+  async upload(bucket, path, file) {
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`, {
+      method: 'POST',
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${await token()}`, 'Content-Type': file.type || 'application/octet-stream', 'x-upsert': 'true' },
+      body: file,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || data.error || 'Upload failed');
+    return path;
+  },
+  async signedUrl(bucket, path, expiresIn = 3600) {
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/sign/${bucket}/${path}`, {
+      method: 'POST',
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${await token()}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ expiresIn }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || 'Could not open file');
+    return `${SUPABASE_URL}/storage/v1${data.signedURL || data.signedUrl}`;
+  },
+};
+
 // db.select('members', { select: '*', order: 'created_at.desc', 'status': 'eq.active', limit: 50 })
 export const db = {
   select(table, params = {}) {
@@ -111,6 +134,8 @@ export const db = {
     return rows[0] || null;
   },
   insert(table, row) { return request('POST', table, { body: row, prefer: 'return=representation' }); },
+  insertQuiet(table, row) { return request('POST', table, { body: row, prefer: 'return=minimal' }); },
+  upsert(table, row, onConflict) { return request('POST', `${table}?on_conflict=${onConflict}`, { body: row, prefer: 'return=representation,resolution=merge-duplicates' }); },
   update(table, match, patch) {
     const q = new URLSearchParams(Object.entries(match).map(([k, v]) => [k, `eq.${v}`]));
     return request('PATCH', `${table}?${q}`, { body: patch, prefer: 'return=representation' });

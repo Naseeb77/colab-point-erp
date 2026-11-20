@@ -10,4 +10,5 @@ Options -Indexes
 </IfModule>
 <IfModule mod_mime.c>
   AddType text/javascript .js
+  AddType application/manifest+json .webmanifest
 </IfModule>

@@ -1,4 +1,4 @@
-import { db } from '../api.js';
+import { db, storage } from '../api.js';
 import { $, esc, money, num, fmtDate, fmtDateTime, fmtTime, dur, today, table, empty, toast, guard, modal, closeModal, field, formData, badge, waLink } from '../ui.js';
 import { plans, seats, lockers, shifts, can } from '../state.js';
 import { searchFilter } from './checkin.js';
@@ -22,6 +22,8 @@ function memberForm(m = {}) {
     ${field('status', 'Status', { options: STATUSES, value: m.status || 'active' })}
     ${field('lead_source', 'How did they find us?', { options: SOURCES, value: m.lead_source })}
     ${field('date_of_birth', 'Date of birth', { type: 'date', value: m.date_of_birth })}
+    ${field('security_deposit', 'Security deposit (Rs)', { type: 'number', value: m.security_deposit ?? 0 })}
+    ${field('deposit_returned', 'Deposit returned', { type: 'checkbox', value: m.deposit_returned })}
     ${field('address', 'Address', { value: m.address, span: 2 })}
     <h4 class="span-2">Emergency contact</h4>
     ${field('emergency_contact_name', 'Name', { value: m.emergency_contact_name })}
@@ -41,6 +43,7 @@ export function openMemberForm(m = {}, onSaved) {
     e.preventDefault();
     const f = formData(e.target);
     if (f.tracking_consent && !m.tracking_consent) f.tracking_consent_at = new Date().toISOString();
+    f.security_deposit = Number(f.security_deposit || 0);
     guard(e.submitter, async () => {
       const [row] = m.id ? await db.update('members', { id: m.id }, f) : await db.insert('members', f);
       closeModal(); toast(m.id ? 'Saved' : 'Member added');
@@ -50,8 +53,8 @@ export function openMemberForm(m = {}, onSaved) {
 }
 
 export default async function members({ view, setTitle, actions }) {
-  setTitle('Members');
-  actions('<button class="btn primary" id="new-member">+ New member</button>');
+  setTitle('Members', 'Everyone who works from CoLab Point');
+  actions('<a class="btn" href="#/scan">Scan form</a><a class="btn" href="#/registrations">Sign-ups</a><button class="btn dark" id="new-member">+ New member</button>');
   const params = new URLSearchParams(location.hash.split('?')[1] || '');
   view.innerHTML = `
   <div class="toolbar">
@@ -59,6 +62,7 @@ export default async function members({ view, setTitle, actions }) {
     <select id="mstatus"><option value="">All statuses</option>${STATUSES.map((s) => `<option>${s}</option>`).join('')}</select>
   </div>
   <div class="card flush" id="list"></div>`;
+  view.style.gap = '16px';
 
   async function load() {
     const q = $('#mq').value.trim();
@@ -131,16 +135,17 @@ function assignPlan(member, onDone) {
 
 export async function memberDetail(ctx, id) {
   const { view, setTitle, actions, rerender } = ctx;
-  const [m, ms, sessions, invoices, usage] = await Promise.all([
+  const [m, ms, sessions, invoices, usage, scans] = await Promise.all([
     db.one('members', { select: '*', id: `eq.${id}` }),
-    db.select('memberships', { select: '*,plans(name,daily_hour_limit,print_pages),seats(code),lockers(code)', member_id: `eq.${id}`, order: 'start_date.desc' }),
+    db.select('memberships', { select: '*,plans(name,daily_hour_limit,print_pages),seats(code),lockers(code),shifts(name)', member_id: `eq.${id}`, order: 'start_date.desc' }),
     db.select('attendance_sessions', { select: '*', member_id: `eq.${id}`, order: 'check_in.desc', limit: 30 }),
     can.finance() ? db.select('invoices', { select: '*', member_id: `eq.${id}`, order: 'issue_date.desc' }) : Promise.resolve([]),
     db.select('v_member_monthly_usage', { select: '*', member_id: `eq.${id}`, order: 'month.desc', limit: 6 }),
+    db.select('form_scans', { select: 'id,image_path,created_at', member_id: `eq.${id}`, order: 'created_at.desc' }),
   ]);
   if (!m) { view.innerHTML = empty('Member not found.'); return; }
   setTitle(m.full_name);
-  actions(`<a class="btn ghost" href="#/members">← Members</a><button class="btn" id="edit">Edit</button>${can.finance() ? '<button class="btn primary" id="assign">Assign plan</button>' : ''}`);
+  actions(`<a class="btn ghost" href="#/members">← Members</a><button class="btn" id="edit">Edit</button>${can.finance() ? '<button class="btn" id="take-pay">Record payment</button><button class="btn dark" id="assign">Assign plan</button>' : ''}`);
 
   const cur = ms.find((x) => x.status === 'active');
   const thisMonth = usage[0];
@@ -172,7 +177,7 @@ export async function memberDetail(ctx, id) {
   <div class="grid-2">
     <div class="card"><div class="card-head"><h2>Memberships</h2></div>
       ${ms.length ? table([
-        { label: 'Plan', render: (r) => `${esc(r.plans?.name)}${r.seats ? `<br><span class="muted small">Seat ${esc(r.seats.code)}${r.lockers ? ` · Locker ${esc(r.lockers.code)}` : ''}</span>` : ''}` },
+        { label: 'Plan', render: (r) => `${esc(r.plans?.name)}${r.shifts ? ` <span class="chip">${esc(r.shifts.name)}</span>` : ''}${r.seats ? `<br><span class="muted small">Seat ${esc(r.seats.code)}${r.lockers ? ` · Locker ${esc(r.lockers.code)}` : ''}</span>` : ''}` },
         { label: 'Period', render: (r) => `${fmtDate(r.start_date)} → ${fmtDate(r.end_date)}` },
         { label: 'Price', cls: 'num', render: (r) => `${money(r.final_price)}${Number(r.discount_amount) ? `<br><span class="muted small">−${money(r.discount_amount)}</span>` : ''}` },
         { label: '', render: (r) => badge(r.status) },
@@ -209,13 +214,18 @@ export async function memberDetail(ctx, id) {
       <dt>Emergency</dt><dd>${esc([m.emergency_contact_name, m.emergency_contact_phone].filter(Boolean).join(' · ') || '—')}</dd>
       <dt>Fingerprint ID</dt><dd>${esc(m.fingerprint_user_id || '—')}</dd>
       <dt>Address</dt><dd>${esc(m.address || '—')}</dd>
+      <dt>Security deposit</dt><dd>${money(m.security_deposit)}${Number(m.security_deposit) ? (m.deposit_returned ? ' · returned' : ' · held') : ''}</dd>
       <dt>Notes</dt><dd>${esc(m.notes || '—')}</dd>
+      ${scans.length ? `<dt>Paper form</dt><dd>${scans.map((s) => `<button class="btn xs" data-scan="${esc(s.image_path)}">View scan · ${fmtDate(s.created_at)}</button>`).join(' ')}</dd>` : ''}
     </dl>
   </div>`;
 
   $('#edit').onclick = () => openMemberForm(m, rerender);
   $('#assign') && ($('#assign').onclick = () => assignPlan(m, rerender));
+  $('#take-pay') && ($('#take-pay').onclick = () => import('./payments.js').then((x) => x.recordPaymentPicker(rerender, m)));
   view.onclick = async (e) => {
+    const sc = e.target.closest('[data-scan]');
+    if (sc) return guard(sc, async () => window.open(await storage.signedUrl('form-scans', sc.dataset.scan), '_blank', 'noopener'));
     const pay = e.target.closest('[data-pay]');
     if (pay) return recordPayment(invoices.find((i) => i.id === pay.dataset.pay), rerender);
     const rem = e.target.closest('[data-remind]');

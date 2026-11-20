@@ -1,6 +1,6 @@
 // Member self-service portal (role = member)
 import { db, auth } from '../api.js';
-import { esc, money, num, fmtDate, fmtTime, dur, table, empty, badge } from '../ui.js';
+import { esc, money, num, fmtDate, fmtTime, dur, table, empty, badge, modal, closeModal, field, formData, guard, toast } from '../ui.js';
 import { state } from '../state.js';
 
 export default async function portal(root) {
@@ -26,7 +26,7 @@ export default async function portal(root) {
         <div class="stat"><small>Hours this month</small><strong>${num(usage[0]?.total_hours ?? 0)}</strong><span>${usage[0]?.days_visited ?? 0} days</span></div>
         <div class="stat ${due.length ? 'danger' : ''}"><small>Amount due</small><strong>${money(due.reduce((a, i) => a + (i.total - i.amount_paid), 0))}</strong><span>${due.length ? `due ${fmtDate(due[0].due_date)}` : 'All paid ✓'}</span></div>
       </div>
-      <div class="card"><div class="card-head"><h2>Member ID</h2></div><p class="member-code">#${m.member_no}</p><p class="muted small">Show this at the front desk to check in.</p></div>
+      <div class="card"><div class="card-head"><h2>Member ID</h2><button class="btn sm" id="issue">Report an issue</button></div><p class="member-code">#${m.member_no}</p><p class="muted small">Show this at the front desk to check in.</p></div>
       <div class="card flush"><div class="card-head pad"><h2>Recent visits</h2></div>
         ${sessions.length ? table([
           { label: 'Date', render: (r) => fmtDate(r.check_in) },
@@ -43,5 +43,13 @@ export default async function portal(root) {
         ], invoices) : empty('No invoices yet.')}</div>
     </main>`;
   }
+  const iss = root.querySelector('#issue');
+  if (iss) iss.onclick = () => {
+    const md = modal('Report an issue or idea', `<form class="form">${field('subject', 'What is wrong?', { required: true, placeholder: 'WiFi slow, AC not cooling…' })}
+      ${field('category', 'Type', { options: [['internet', 'Internet / WiFi'], ['power', 'Power'], ['ac', 'AC / fans'], ['cleaning', 'Cleaning'], ['furniture', 'Furniture'], ['billing', 'Billing'], ['general', 'Idea / other']] })}
+      ${field('description', 'Details', { type: 'textarea' })}<div class="form-actions"><button class="btn dark" type="submit">Send</button></div></form>`);
+    md.querySelector('form').onsubmit = (e) => { e.preventDefault(); const d = formData(e.target); d.member_id = m.id;
+      guard(e.submitter, async () => { await db.insertQuiet('tickets', d); closeModal(); toast('Sent to the front desk. Thank you!'); }).catch(() => {}); };
+  };
   root.querySelector('#logout').onclick = async () => { await auth.signOut(); location.reload(); };
 }

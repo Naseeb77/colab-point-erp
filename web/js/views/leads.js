@@ -1,5 +1,5 @@
 import { db } from '../api.js';
-import { $, esc, fmtDate, today, empty, toast, guard, modal, closeModal, field, formData, waLink } from '../ui.js';
+import { $, esc, fmtDate, today, empty, toast, guard, modal, closeModal, field, formData, waLink, badge } from '../ui.js';
 import { plans } from '../state.js';
 import { openMemberForm } from './members.js';
 
@@ -11,14 +11,15 @@ async function leadForm(l = {}, onDone) {
   const md = modal(l.id ? 'Edit lead' : 'New lead', `<form class="form grid">
     ${field('name', 'Name', { required: true, value: l.name, span: 2 })}
     ${field('phone', 'Phone', { value: l.phone })}${field('email', 'Email', { type: 'email', value: l.email })}
-    ${field('department', 'Interested in', { options: [['coworking', 'Coworking'], ['marketing', 'Digital marketing'], ['software', 'Website / software']], value: l.department })}
+    <input type="hidden" name="department" value="coworking">
+    ${field('temperature', 'How interested?', { options: [['hot', '🔥 Hot — ready to join'], ['warm', 'Warm'], ['cold', 'Cold'], ['nurture', 'Nurture — later']], value: l.temperature || 'warm' })}
     ${field('interested_plan_id', 'Plan', { options: [['', '—'], ...pl.map((p) => [p.id, p.name])], value: l.interested_plan_id })}
-    ${field('service_interest', 'Service details', { value: l.service_interest, placeholder: 'e.g. SEO for clinic, e-commerce site' })}
+    ${field('service_interest', 'Needs', { value: l.service_interest, placeholder: 'e.g. night seat for 3 people, private office' })}
     ${field('source', 'Source', { options: SOURCES, value: l.source })}
     ${field('status', 'Stage', { options: STAGES, value: l.status || 'new' })}
     ${field('next_follow_up', 'Next follow-up', { type: 'date', value: l.next_follow_up })}
     ${field('notes', 'Notes', { type: 'textarea', value: l.notes, span: 2 })}
-    <div class="span-2 form-actions">${l.id && l.department === 'coworking' && !l.converted_member_id ? '<button type="button" class="btn" id="convert">Convert to member</button>' : ''}<button class="btn primary" type="submit">Save</button></div>
+    <div class="span-2 form-actions">${l.id && !l.converted_member_id ? '<button type="button" class="btn" id="convert">Convert to member</button>' : ''}<button class="btn primary" type="submit">Save</button></div>
   </form>`, { wide: true });
   const f = md.querySelector('form');
   f.onsubmit = (e) => {
@@ -37,9 +38,9 @@ async function leadForm(l = {}, onDone) {
 }
 
 export default async function leads({ view, setTitle, actions, rerender }) {
-  setTitle('Leads');
-  actions('<button class="btn primary" id="new-lead">+ New lead</button>');
-  const rows = await db.select('leads', { select: '*', order: 'created_at.desc', limit: 300 });
+  setTitle('Leads', 'People interested in joining — follow up before they go elsewhere');
+  actions('<button class="btn dark" id="new-lead">+ New lead</button>');
+  const rows = await db.select('leads', { select: '*', department: 'eq.coworking', order: 'created_at.desc', limit: 300 });
   const t = today();
   view.innerHTML = `
   <p class="muted small">Enquiries from the website form land here automatically. Open a card to update its stage.</p>
@@ -48,7 +49,7 @@ export default async function leads({ view, setTitle, actions, rerender }) {
     return `<div class="col"><div class="col-head"><strong>${label}</strong><span>${items.length}</span></div>
       ${items.map((r) => `<div class="kcard" data-id="${r.id}">
         <strong>${esc(r.name)}</strong>
-        <span class="muted small">${esc(r.department)}${r.source ? ' · ' + esc(r.source) : ''}</span>
+        <div class="chips">${badge(r.temperature)}${r.source ? `<span class="chip">${esc(r.source)}</span>` : ''}</div>
         ${r.next_follow_up ? `<span class="small ${r.next_follow_up <= t ? 'due' : 'muted'}">Follow up ${fmtDate(r.next_follow_up)}</span>` : ''}
         ${r.phone ? `<a class="chip wa" target="_blank" rel="noopener" href="${waLink(r.phone, `Assalam-o-Alaikum ${r.name}, this is CoLab Point.`)}">WhatsApp</a>` : ''}
       </div>`).join('') || '<div class="muted small pad">—</div>'}

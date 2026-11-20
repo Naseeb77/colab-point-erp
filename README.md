@@ -20,9 +20,21 @@ After the first deploy, set the app's URL in Supabase → Authentication → URL
 
 Create an account in the app with **colabpoint@gmail.com**. That account automatically becomes the owner. Other staff create their own accounts, and the owner gives them a role in Settings → Staff.
 
-## Pages
+## Pages (v2 — coworking only)
 
-Dashboard · Check-in desk · Members · Billing (payments, WhatsApp reminders, expenses) · Leads · Reports · Settings · Member portal
+- **Overview**: Dashboard (day/night seat map, income chart, renewals, today, needs attention, busy hours), Tasks
+- **Members & Space**: Members, Check-in desk, Seat availability (day/night), Meeting rooms, New sign-ups (online joining form + QR), Scan a paper form (photo → OCR → member), Leads, Complaints
+- **Finance**: Payments (day-by-day, filters, receipts, CSV), Invoices & dues (WhatsApp reminders), Expenses, Reports
+- **Operations**: Staff attendance (daily + monthly report), Employees (salary, advances), Vendors & work done, Stock & pantry, Settings
+- **Public**: `/#/join` joining form · Member portal (plan, hours, invoices, report an issue)
+
+## Mobile app
+
+The app is installable (PWA). On Android Chrome: menu → *Install app* / *Add to Home screen*. On iPhone Safari: Share → *Add to Home Screen*. The bottom bar gives quick access to Check-in, Scan and Members.
+
+## WordPress plugin
+
+`wordpress/colabpoint-connect` — zip the folder and upload it in WordPress → Plugins → Add New → Upload. Settings → CoLab Point. Shortcodes: `[colabpoint_packages]`, `[colabpoint_enquiry]`, `[colabpoint_join_button]`, `[colabpoint_login_button]`, `[colabpoint_social]`.
 
 ## Configuration
 
