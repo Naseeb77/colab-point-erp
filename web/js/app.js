@@ -67,6 +67,7 @@ function renderShell() {
     <div class="sidebar-foot">
       <div class="me"><div class="avatar">${esc((state.profile.full_name || state.email || '?')[0].toUpperCase())}</div>
         <div><strong>${esc(state.profile.full_name || 'Me')}</strong><small>${esc(state.email || '')}</small></div></div>
+      <button class="btn ghost sm block" id="chpw">Change password</button>
       <button class="btn ghost sm block" id="logout">Sign out</button>
     </div>
   </aside>
@@ -75,6 +76,7 @@ function renderShell() {
     <section id="view" class="view"></section>
   </div>`;
   $('#logout').onclick = async () => { await auth.signOut(); renderAuth(); };
+  $('#chpw').onclick = () => renderNewPassword();
   $('#menu').onclick = () => $('#sidebar').classList.toggle('open');
 }
 
