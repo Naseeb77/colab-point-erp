@@ -104,8 +104,28 @@ async function route() {
   }
 }
 
+function renderNewPassword() {
+  document.body.className = 'auth-page';
+  $('#app').innerHTML = `
+  <div class="auth-card">
+    <div class="brand big"><span class="logo-mark">C</span><div><strong>CoLab Point</strong><small>Set a new password</small></div></div>
+    <form id="pw-form" class="form">
+      <label class="fld"><span>New password</span><input name="password" type="password" minlength="6" required autocomplete="new-password"></label>
+      <button class="btn primary block" type="submit">Save password</button>
+    </form>
+  </div>`;
+  $('#pw-form').onsubmit = (e) => {
+    e.preventDefault();
+    guard(e.submitter, async () => {
+      await auth.updatePassword(formData(e.target).password);
+      toast('Password updated');
+      await boot();
+    }).catch(() => {});
+  };
+}
+
 async function boot() {
-  consumeAuthRedirect();
+  if (consumeAuthRedirect() === 'recovery') return renderNewPassword();
   if (!auth.session) return renderAuth();
   try {
     const id = auth.userId;

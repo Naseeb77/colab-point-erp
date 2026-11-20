@@ -44,6 +44,16 @@ export const auth = {
   async resetPassword(email) {
     return authFetch('recover', { email });
   },
+  async updatePassword(password) {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method: 'PUT',
+      headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json', Authorization: `Bearer ${await token()}` },
+      body: JSON.stringify({ password }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.msg || data.message || 'Could not update password');
+    return data;
+  },
   async refresh() {
     if (!session?.refresh_token) return null;
     try {
@@ -61,14 +71,14 @@ export const auth = {
 
 // Handle magic/confirmation links that land with #access_token=...
 export function consumeAuthRedirect() {
-  if (!location.hash.includes('access_token=')) return false;
+  if (!location.hash.includes('access_token=')) return null;
   const p = new URLSearchParams(location.hash.slice(1));
   saveSession(withExpiry({
     access_token: p.get('access_token'), refresh_token: p.get('refresh_token'),
     expires_in: Number(p.get('expires_in') || 3600), user: null,
   }));
   history.replaceState(null, '', location.pathname + '#/');
-  return true;
+  return p.get('type') || 'login';
 }
 
 async function token() {
