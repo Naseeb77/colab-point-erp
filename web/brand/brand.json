@@ -100,7 +100,7 @@
   "logos": [
     {
       "url": "https://colabpoint.com/wp-content/uploads/2024/06/logo_color_1_2x.png",
-      "error": "cannot identify image file <_io.BytesIO object at 0x7b13b1bb5210>"
+      "error": "cannot identify image file <_io.BytesIO object at 0x725cce475210>"
     },
     {
       "url": "https://colabpoint.com/wp-content/uploads/2024/05/Web-Logo-II.png",
@@ -285,5 +285,5 @@
       }
     ]
   },
-  "icon_source": "web/brand/logo-3.png"
+  "icon_source": "/tmp/brand/logo-3.png"
 }
