@@ -100,7 +100,7 @@
   "logos": [
     {
       "url": "https://colabpoint.com/wp-content/uploads/2024/06/logo_color_1_2x.png",
-      "error": "cannot identify image file <_io.BytesIO object at 0x788908fa9210>"
+      "error": "cannot identify image file <_io.BytesIO object at 0x7b13b1bb5210>"
     },
     {
       "url": "https://colabpoint.com/wp-content/uploads/2024/05/Web-Logo-II.png",
@@ -111,8 +111,20 @@
       "file": "logo-2.png"
     },
     {
-      "url": "https://colabpoint.com/wp-content/uploads/2025/03/cropped-logoicon-32x32.png",
+      "url": "https://colabpoint.com/wp-content/uploads/2025/03/cropped-logoicon.png",
       "file": "logo-3.png"
+    },
+    {
+      "url": "https://colabpoint.com/wp-content/uploads/2025/03/cropped-logoicon-270x270.png",
+      "file": "logo-4.png"
+    },
+    {
+      "url": "https://colabpoint.com/wp-content/uploads/2025/03/cropped-logoicon-192x192.png",
+      "file": "logo-5.png"
+    },
+    {
+      "url": "https://colabpoint.com/wp-content/uploads/2025/03/cropped-logoicon-32x32.png",
+      "file": "logo-6.png"
     }
   ],
   "logo_colors": {
@@ -170,6 +182,84 @@
     ],
     "logo-3.png": [
       {
+        "hex": "#1d3c9f",
+        "share": 0.233
+      },
+      {
+        "hex": "#1563a8",
+        "share": 0.216
+      },
+      {
+        "hex": "#1176ad",
+        "share": 0.177
+      },
+      {
+        "hex": "#0c8fb3",
+        "share": 0.129
+      },
+      {
+        "hex": "#08a2b7",
+        "share": 0.122
+      },
+      {
+        "hex": "#0f82b0",
+        "share": 0.122
+      }
+    ],
+    "logo-4.png": [
+      {
+        "hex": "#1d3b9f",
+        "share": 0.201
+      },
+      {
+        "hex": "#107cae",
+        "share": 0.198
+      },
+      {
+        "hex": "#0c8fb3",
+        "share": 0.165
+      },
+      {
+        "hex": "#146aaa",
+        "share": 0.163
+      },
+      {
+        "hex": "#175aa6",
+        "share": 0.151
+      },
+      {
+        "hex": "#08a2b7",
+        "share": 0.122
+      }
+    ],
+    "logo-5.png": [
+      {
+        "hex": "#107cae",
+        "share": 0.199
+      },
+      {
+        "hex": "#1d3b9f",
+        "share": 0.199
+      },
+      {
+        "hex": "#146aaa",
+        "share": 0.166
+      },
+      {
+        "hex": "#0c8fb3",
+        "share": 0.163
+      },
+      {
+        "hex": "#175aa6",
+        "share": 0.151
+      },
+      {
+        "hex": "#08a2b7",
+        "share": 0.122
+      }
+    ],
+    "logo-6.png": [
+      {
         "hex": "#1d3b9f",
         "share": 0.227
       },
@@ -194,5 +284,6 @@
         "share": 0.124
       }
     ]
-  }
+  },
+  "icon_source": "web/brand/logo-3.png"
 }
