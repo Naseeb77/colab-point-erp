@@ -6,7 +6,7 @@ import { state } from '../state.js';
 export default async function portal(root) {
   document.body.className = 'portal';
   const m = await db.one('members', { select: '*', profile_id: `eq.${state.profile.id}` });
-  const header = `<header class="portal-head"><div class="brand"><span class="logo-mark">C</span><strong>CoLab Point</strong></div><button class="btn ghost sm" id="logout">Sign out</button></header>`;
+  const header = `<header class="portal-head"><div class="brand"><img class="wordmark" src="/brand/wordmark-dark.png" alt="CoLab Point" style="height:30px"></div><button class="btn ghost sm" id="logout">Sign out</button></header>`;
   if (!m) {
     root.innerHTML = `${header}<main class="portal-main"><div class="card"><h2>Welcome, ${esc(state.profile.full_name || '')}</h2>
       <p>Your account isn't linked to a membership yet. Please ask the CoLab Point front desk to link it.</p></div></main>`;

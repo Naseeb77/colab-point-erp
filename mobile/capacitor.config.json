@@ -1,0 +1,6 @@
+{
+  "appId": "com.colabpoint.app",
+  "appName": "CoLab Point",
+  "webDir": "www",
+  "android": { "allowMixedContent": false }
+}

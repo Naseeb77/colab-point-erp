@@ -28,13 +28,20 @@ Create an account in the app with **colabpoint@gmail.com**. That account automat
 - **Operations**: Staff attendance (daily + monthly report), Employees (salary, advances), Vendors & work done, Stock & pantry, Settings
 - **Public**: `/#/join` joining form · Member portal (plan, hours, invoices, report an issue)
 
-## Mobile app
+## Apps (built automatically)
 
-The app is installable (PWA). On Android Chrome: menu → *Install app* / *Add to Home screen*. On iPhone Safari: Share → *Add to Home Screen*. The bottom bar gives quick access to Check-in, Scan and Members.
+Every push to `main` that touches `web/`, `mobile/` or `desktop/` runs **Build apps** on GitHub Actions and publishes the downloads on the release **apps-latest**:
+
+- `CoLabPoint-Android.apk` — Android app (Capacitor). Install by allowing "Install unknown apps".
+- `CoLabPoint-Setup.exe` / `CoLabPoint-Portable.exe` — Windows desktop app (Electron).
+- iPhone / iPad / Mac: open the web app in Safari → Share → *Add to Home Screen* (an App Store build needs an Apple Developer account, $99/year).
+- Web app: any browser; Chrome/Edge can also *Install* it as a desktop app.
+
+**Brand sync** (`tools/brand.py`) downloads the logo and colours from colabpoint.com and regenerates the icons in `web/icons` and `web/brand`.
 
 ## WordPress plugin
 
-`wordpress/colabpoint-connect` — zip the folder and upload it in WordPress → Plugins → Add New → Upload. Settings → CoLab Point. Shortcodes: `[colabpoint_packages]`, `[colabpoint_enquiry]`, `[colabpoint_join_button]`, `[colabpoint_login_button]`, `[colabpoint_social]`.
+`wordpress/colabpoint-connect` — zip the folder and upload it in WordPress → Plugins → Add New → Upload. Settings → CoLab Point. Shortcodes: `[colabpoint_packages]`, `[colabpoint_enquiry]`, `[colabpoint_join_button]`, `[colabpoint_login_button]`, `[colabpoint_social]`, `[colabpoint_faq]`. Also adds LocalBusiness + Offer + FAQ structured data (JSON-LD) on every page and serves `/llms.txt` (re-save Settings → Permalinks once after activating).
 
 ## Configuration
 

@@ -1,18 +1,18 @@
-/* CoLab Point — design tokens. Swap --accent when the logo colours are confirmed. */
+/* CoLab Point — brand tokens from colabpoint.com (logo gradient #1d3b9f → #09a0b7, site primary #4daadc, navy #04243c) */
 :root {
-  --accent: #f2c200;
-  --accent-ink: #5c4600;
-  --accent-soft: #fff5cf;
-  --accent-line: #f4dc7a;
-  --ink: #1d1c19;
-  --ink-2: #3a3833;
-  --muted: #7a776d;
-  --bg: #f6f5f0;
-  --side: #fbfaf6;
+  --accent: #1f8ac0;
+  --accent-ink: #0b3d5c;
+  --accent-soft: #e9f4fb;
+  --accent-line: #b8dcf0;
+  --ink: #13202b;
+  --ink-2: #2e3f4d;
+  --muted: #6b7a88;
+  --bg: #f3f6f9;
+  --side: #fbfcfd;
   --card: #ffffff;
-  --line: #ebe8df;
-  --line-2: #f2f0e9;
-  --dark: #1d1c19;
+  --line: #e2e8ee;
+  --line-2: #edf1f5;
+  --dark: #04243c;
   --green: #18794e; --green-bg: #e7f5ec;
   --amber: #9a6200; --amber-bg: #fff1d6;
   --red: #b42318; --red-bg: #fdecea;
@@ -384,3 +384,49 @@ body.portal #app { display: block; }
 .att { color: inherit; }
 a.li:hover, a.att:hover { background: #fcfbf7; }
 @media (max-width: 760px) { .mobile-bar { display: flex; } }
+
+/* ===== Brand (colabpoint.com) ===== */
+:root { --brand-grad: linear-gradient(135deg, #1d3b9f 0%, #1274ac 50%, #09a0b7 100%); --sky: #4daadc; }
+.logo-mark { background: #fff url('/brand/logo.png') center / cover no-repeat; color: transparent; overflow: hidden; box-shadow: 0 0 0 1px var(--line); border-radius: 50%; }
+.stat.dark { background: var(--dark); border-color: var(--dark); }
+.stat.dark strong { color: var(--sky); }
+.stat.dark small, .stat.dark span { color: #9fb6c8; }
+.btn.accent { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.dark:hover, .btn.primary:hover { background: #0b3a5c; }
+.badge.yellow { background: var(--sky); color: #04243c; }
+.pill .n { background: var(--accent-soft); color: var(--accent-ink); }
+.pill.on .n { background: var(--sky); color: #04243c; }
+.cell.l1 { background: #d6ecf8; } .cell.l2 { background: #a6d4ee; } .cell.l3 { background: #5fb0dd; } .cell.l4 { background: #1f8ac0; } .cell.l5 { background: #0b3d5c; }
+.sq.taken { background: #0b3d5c; border-color: #0b3d5c; }
+.legend i.taken { background: #0b3d5c; border-color: #0b3d5c; }
+.sq.leaving { outline-color: var(--sky); }
+.legend i.leaving { background: var(--sky); border-color: var(--sky); }
+.slot.taken { background: #0b3d5c; }
+.slot.taken .top { color: #a9c6da; }
+.slot.leaving { background: #e3f2fb; }
+.zone-head { background: var(--brand-grad); }
+.zone-head .badge { background: rgba(255,255,255,.18); color: #fff; }
+.zone-head .badge.yellow { background: #fff; color: #0b3d5c; }
+.bars .b.cur i { background: var(--brand-grad); }
+.bars .b i { background: #dbe6ef; }
+.meter i { background: var(--accent); }
+.bar i { background: var(--accent); }
+.sidebar nav a.active { background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent-line); color: #0b3d5c; }
+.sidebar nav a.active .ni { color: var(--accent); }
+.sidebar nav a .count { background: var(--accent); }
+.avatar { background: var(--accent-soft); color: var(--accent-ink); }
+.avatar.dark { background: var(--dark); color: var(--sky); }
+.scan-drop { border-color: var(--accent-line); background: var(--accent-soft); }
+.progress i { background: var(--brand-grad); }
+body.auth-page #app, body.public #app { background: radial-gradient(900px 420px at 50% -10%, #dcefff, var(--bg)); }
+.auth-card .brand.big .logo-mark, .join-card .brand.big .logo-mark { width: 44px; height: 44px; }
+.total-line { background: var(--accent-soft); border-color: var(--accent-line); }
+.kcard:hover { border-color: var(--accent); }
+.tabs a.active { border-color: var(--accent); }
+input:focus, select:focus, textarea:focus { outline-color: var(--accent-soft); border-color: var(--accent); }
+.mobile-bar a.active { background: var(--accent-soft); color: #0b3d5c; }
+
+.wordmark { height: 36px; width: auto; display: block; }
+.sidebar .brand { padding: 18px 20px 12px; }
+.brand.big .wordmark { height: 46px; }
+.cell { background: #edf1f5; }

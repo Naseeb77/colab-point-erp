@@ -61,7 +61,7 @@ function allowed(item) {
 }
 
 function authCard(inner) {
-  return `<div class="auth-card"><div class="brand big"><span class="logo-mark">C</span><div><strong>CoLab Point</strong><small>Workspace management</small></div></div>${inner}</div>`;
+  return `<div class="auth-card"><div class="brand big"><img class="wordmark" src="/brand/wordmark-dark.png" alt="CoLab Point"></div>${inner}</div>`;
 }
 
 function renderAuth(mode = 'login') {
@@ -112,7 +112,7 @@ function renderShell() {
   const p = state.profile;
   $('#app').innerHTML = `
   <aside class="sidebar" id="sidebar">
-    <div class="brand"><span class="logo-mark">C</span><div><strong>CoLab Point</strong><small>Workspace CRM</small></div></div>
+    <div class="brand"><img class="wordmark" src="/brand/wordmark-dark.png" alt="CoLab Point"></div>
     <nav>${NAV.map((g) => {
       const items = g.items.map((i) => ({ ...i, roles: i.roles || g.roles })).filter(allowed);
       if (!items.length) return '';
@@ -248,6 +248,16 @@ async function boot() {
   }
 }
 
+// Inside the Android app (Capacitor) new windows are not supported: open external links in the phone's apps instead.
+if (window.Capacitor) {
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[target=_blank]');
+    if (a && /^(https?:|tel:|mailto:)/.test(a.href)) { e.preventDefault(); location.href = a.href; }
+  }, true);
+  const nativeOpen = window.open;
+  window.open = (url, ...rest) => (url && /^https?:/.test(url) ? (location.href = url, null) : nativeOpen.call(window, url, ...rest));
+}
+
 window.addEventListener('hashchange', route);
-if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('/sw.js').catch(() => {});
+if ('serviceWorker' in navigator && location.protocol === 'https:' && !window.Capacitor) navigator.serviceWorker.register('/sw.js').catch(() => {});
 boot();

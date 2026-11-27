@@ -58,9 +58,9 @@ export function printBlankForm() {
   w.document.write(`<!DOCTYPE html><html><head><title>Joining form</title><style>
     body{font-family:Arial,sans-serif;padding:28px;color:#111} h1{margin:0;font-size:22px} .m{color:#555;font-size:12px;margin-bottom:18px}
     .r{display:flex;gap:10px;align-items:flex-end;margin:16px 0;font-size:15px} .r b{white-space:nowrap} .r span{flex:1;border-bottom:1.5px solid #333;height:22px}
-    .hint{background:#fff6cc;padding:8px 10px;border-radius:6px;font-size:12px} .box{display:inline-block;width:14px;height:14px;border:1.5px solid #333;margin-right:6px;vertical-align:-2px}
+    .hint{background:#e9f4fb;padding:8px 10px;border-radius:6px;font-size:12px} .box{display:inline-block;width:14px;height:14px;border:1.5px solid #333;margin-right:6px;vertical-align:-2px}
   </style></head><body>
-  <h1>${(s.name || 'CoLab Point')} — Membership Form</h1><div class="m">${s.address || ''} · ${s.phone || ''}</div>
+  <img src="${location.origin}/brand/wordmark-dark.png" alt="" style="height:44px"><h1 style="margin-top:10px">${(s.name || 'CoLab Point')} — Membership Form</h1><div class="m">${s.address || ''} · ${s.phone || ''}</div>
   <div class="hint">Please write in CAPITAL LETTERS and keep numbers clear — this form is read by a scanner.</div>
   ${['Full name', 'Phone', 'WhatsApp', 'Email', 'CNIC', 'Date of birth (DD/MM/YYYY)', 'Profession', 'Company', 'Address', 'Emergency contact name', 'Emergency phone'].map(row).join('')}
   <div class="r"><b>Package:</b> &nbsp;<span style="border:0"><i class="box"></i>Shared &nbsp; <i class="box"></i>Dedicated desk &nbsp; <i class="box"></i>Office &nbsp; <i class="box"></i>Day &nbsp; <i class="box"></i>Night</span></div>

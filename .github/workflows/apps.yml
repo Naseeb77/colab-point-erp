@@ -1,0 +1,71 @@
+name: Build apps
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['web/**', 'mobile/**', 'desktop/**', '.github/workflows/apps.yml']
+permissions:
+  contents: write
+concurrency: { group: apps, cancel-in-progress: true }
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - uses: actions/setup-java@v4
+        with: { distribution: 'temurin', java-version: '21' }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install pillow
+      - name: Build Android app
+        working-directory: mobile
+        run: |
+          cp -r ../web www
+          npm install
+          npx cap add android
+          python android-setup.py
+          npx cap sync android
+          cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+          cp app/build/outputs/apk/debug/app-debug.apk ../../CoLabPoint-Android.apk
+      - uses: actions/upload-artifact@v4
+        with: { name: android, path: CoLabPoint-Android.apk }
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - name: Build Windows app
+        working-directory: desktop
+        shell: bash
+        run: |
+          cp -r ../web app
+          npm install
+          npx electron-builder --win --publish never
+          ls dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: |
+            desktop/dist/CoLabPoint-Setup.exe
+            desktop/dist/CoLabPoint-Portable.exe
+  release:
+    needs: [android, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: out, merge-multiple: true }
+      - name: Publish downloads
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apps-latest
+          name: CoLab Point apps (latest)
+          make_latest: true
+          body: |
+            Latest CoLab Point apps, built automatically from the main branch.
+            - **CoLabPoint-Android.apk** — install on Android phones (allow "Install unknown apps").
+            - **CoLabPoint-Setup.exe** — Windows installer. **CoLabPoint-Portable.exe** — runs without installing.
+            - iPhone / Mac: open the web app in Safari → Share → Add to Home Screen.
+          files: out/*

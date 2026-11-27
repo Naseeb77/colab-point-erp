@@ -1,0 +1,21 @@
+{
+  "name": "colabpoint-desktop",
+  "productName": "CoLab Point",
+  "version": "1.0.0",
+  "description": "CoLab Point workspace management",
+  "main": "main.js",
+  "author": "CoLab Point",
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.colabpoint.desktop",
+    "productName": "CoLab Point",
+    "files": ["main.js", "app/**/*"],
+    "win": { "target": ["nsis", "portable"], "icon": "app/brand/app-icon-1024.png" },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true, "shortcutName": "CoLab Point" },
+    "portable": { "artifactName": "CoLabPoint-Portable.exe" },
+    "artifactName": "CoLabPoint-Setup.${ext}"
+  }
+}

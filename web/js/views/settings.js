@@ -177,6 +177,10 @@ export default async function settings({ view, setTitle }) {
       ${field('name', 'Business name', { value: s.name, span: 2 })}
       ${field('phone', 'Phone', { value: s.phone })}${field('email', 'Email', { value: s.email })}
       ${field('address', 'Address', { value: s.address, span: 2 })}${field('website', 'Website', { value: s.website, span: 2 })}
+      ${field('description', 'Short description (used on the website and for Google / AI search)', { type: 'textarea', value: s.description, span: 2 })}
+      ${field('opening_hours', 'Opening hours', { value: s.opening_hours, placeholder: 'Mo-Su 09:00-23:59' })}${field('google_review_url', 'Google review link', { value: s.google_review_url, placeholder: 'https://g.page/r/…/review' })}
+      ${field('google_maps_url', 'Google Maps link', { value: s.google_maps_url })}<span></span>
+      ${field('latitude', 'Latitude', { value: s.latitude, placeholder: '32.57' })}${field('longitude', 'Longitude', { value: s.longitude, placeholder: '74.07' })}
       ${field('reminder_days_before', 'Remind days before due (comma separated)', { value: (s.reminder_days_before || []).join(',') })}
       ${field('reminder_days_after', 'Remind days after due', { value: (s.reminder_days_after || []).join(',') })}
       <div class="span-2 form-actions"><button class="btn dark" type="submit">Save</button></div></form></div>`;
@@ -185,6 +189,7 @@ export default async function settings({ view, setTitle }) {
       const f = formData(e.target);
       const arr = (v) => String(v || '').split(',').map((x) => parseInt(x, 10)).filter((x) => !Number.isNaN(x));
       f.reminder_days_before = arr(f.reminder_days_before); f.reminder_days_after = arr(f.reminder_days_after);
+      f.latitude = f.latitude ? Number(f.latitude) : null; f.longitude = f.longitude ? Number(f.longitude) : null;
       guard(e.submitter, async () => { const [r] = await db.update('org_settings', { id: 1 }, f); state.settings = r; toast('Saved'); }).catch(() => {});
     };
   }

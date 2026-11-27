@@ -61,9 +61,9 @@ export function printReceipt(p) {
   w.document.write(`<!DOCTYPE html><html><head><title>${esc(p.receipt_no)}</title><style>
     body{font-family:Inter,system-ui,sans-serif;padding:24px;color:#1d1c19} h1{font-size:18px;margin:0} .m{color:#777;font-size:12px}
     table{width:100%;border-collapse:collapse;margin-top:16px} td{padding:6px 0;border-bottom:1px solid #eee;font-size:13px} td:last-child{text-align:right}
-    .tot{font-size:20px;font-weight:700;text-align:right;margin-top:14px} .logo{width:34px;height:34px;border-radius:9px;background:#f2c200;display:inline-grid;place-items:center;font-weight:800}
+    .tot{font-size:20px;font-weight:700;text-align:right;margin-top:14px} .logo{width:40px;height:40px;border-radius:50%}
   </style></head><body>
-    <div style="display:flex;gap:10px;align-items:center"><span class="logo">C</span><div><h1>${esc(s.name || 'CoLab Point')}</h1><div class="m">${esc(s.address || '')}<br>${esc(s.phone || '')} · ${esc(s.email || '')}</div></div></div>
+    <div><img src="${location.origin}/brand/wordmark-dark.png" alt="" style="height:38px"><div style="margin-top:8px"><h1>${esc(s.name || 'CoLab Point')}</h1><div class="m">${esc(s.address || '')}<br>${esc(s.phone || '')} · ${esc(s.email || '')}</div></div></div>
     <h2 style="margin:20px 0 4px;font-size:15px">Payment receipt</h2><div class="m">${esc(p.receipt_no)} · ${fmtDate(p.paid_at)} ${fmtTime(p.paid_at)}</div>
     <table><tr><td>Received from</td><td>${esc(p.who)}</td></tr><tr><td>Invoice</td><td>${esc(p.invoices?.invoice_no || '')}</td></tr>
     <tr><td>Method</td><td>${esc(ML[p.method] || p.method)}${p.reference ? ' · ' + esc(p.reference) : ''}</td></tr>${p.notes ? `<tr><td>Note</td><td>${esc(p.notes)}</td></tr>` : ''}</table>

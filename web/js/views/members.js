@@ -1,6 +1,6 @@
 import { db, storage } from '../api.js';
 import { $, esc, money, num, fmtDate, fmtDateTime, fmtTime, dur, today, table, empty, toast, guard, modal, closeModal, field, formData, badge, waLink } from '../ui.js';
-import { plans, seats, lockers, shifts, can } from '../state.js';
+import { plans, seats, lockers, shifts, can, state } from '../state.js';
 import { searchFilter } from './checkin.js';
 import { recordPayment, reminderText } from './billing.js';
 
@@ -163,6 +163,7 @@ export async function memberDetail(ctx, id) {
         <a class="chip wa" target="_blank" rel="noopener" href="${waLink(wa, `Assalam-o-Alaikum ${m.full_name},`)}">WhatsApp</a>
         ${m.email ? `<a class="chip" href="mailto:${esc(m.email)}">✉ ${esc(m.email)}</a>` : ''}
         ${m.tracking_consent ? '<span class="chip ok">Tracking consent ✓</span>' : '<span class="chip">No tracking consent</span>'}
+        ${state.settings?.google_review_url ? `<button class="chip wa" data-review>⭐ Ask for Google review${m.review_requested_at ? ' (sent ' + fmtDate(m.review_requested_at) + ')' : ''}</button>` : ''}
       </div>
     </div>
   </div>
@@ -224,6 +225,11 @@ export async function memberDetail(ctx, id) {
   $('#assign') && ($('#assign').onclick = () => assignPlan(m, rerender));
   $('#take-pay') && ($('#take-pay').onclick = () => import('./payments.js').then((x) => x.recordPaymentPicker(rerender, m)));
   view.onclick = async (e) => {
+    if (e.target.closest('[data-review]')) {
+      window.open(waLink(wa, `Assalam-o-Alaikum ${m.full_name.split(' ')[0]}! Thank you for working from CoLab Point 🙏 If you like the space, could you leave us a short Google review? It really helps: ${state.settings.google_review_url}`), '_blank', 'noopener');
+      db.update('members', { id: m.id }, { review_requested_at: new Date().toISOString() }).catch(() => {});
+      return;
+    }
     const sc = e.target.closest('[data-scan]');
     if (sc) return guard(sc, async () => window.open(await storage.signedUrl('form-scans', sc.dataset.scan), '_blank', 'noopener'));
     const pay = e.target.closest('[data-pay]');

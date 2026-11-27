@@ -5,7 +5,8 @@ from PIL import Image
 
 SITE = "https://colabpoint.com/"
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36", "Accept": "image/png,image/*;q=0.8,*/*;q=0.5"}
-OUT = "web/brand"; ICONS = "web/icons"
+OUT = "web/brand"; ICONS = "web/icons"; TMP = "/tmp/brand"
+os.makedirs(TMP, exist_ok=True)
 os.makedirs(OUT, exist_ok=True); os.makedirs(ICONS, exist_ok=True)
 
 def get(url):
@@ -38,11 +39,10 @@ for i, u in enumerate(logos[:8]):
         data = get(u if u.startswith("http") else SITE.rstrip("/") + u)
         ext = ".svg" if u.lower().endswith(".svg") else ".png"
         name = f"logo-{i}{ext}"
-        open(f"{OUT}/raw-{i}.bin", "wb").write(data[:200000])
         if ext == ".png":
-            Image.open(io.BytesIO(data)).convert("RGBA").save(f"{OUT}/{name}")
+            Image.open(io.BytesIO(data)).convert("RGBA").save(f"{TMP}/{name}")
         else:
-            open(f"{OUT}/{name}", "wb").write(data)
+            open(f"{TMP}/{name}", "wb").write(data)
         saved.append({"url": u, "file": name})
     except Exception as e:
         saved.append({"url": u, "error": str(e)})
@@ -60,17 +60,17 @@ report = {"elementor_globals": glob, "top_hex_in_css": hexes.most_common(20), "l
 main = None
 for s in saved:
     if s.get("file", "").endswith(".png"):
-        report["logo_colors"][s["file"]] = dominant(f"{OUT}/{s['file']}")
-        if main is None: main = f"{OUT}/{s['file']}"
+        report["logo_colors"][s["file"]] = dominant(f"{TMP}/{s['file']}")
+        if main is None: main = f"{TMP}/{s['file']}"
 
 squares = []
 for sv in saved:
     f = sv.get("file", "")
     if f.endswith(".png"):
-        im = Image.open(f"{OUT}/{f}")
+        im = Image.open(f"{TMP}/{f}")
         if abs(im.width - im.height) <= 2: squares.append((im.width, f))
 if squares:
-    main = f"{OUT}/{max(squares)[1]}"
+    main = f"{TMP}/{max(squares)[1]}"
 report["icon_source"] = main
 if main:
     logo = Image.open(main).convert("RGBA")

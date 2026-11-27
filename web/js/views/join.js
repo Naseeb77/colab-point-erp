@@ -8,7 +8,7 @@ export default async function join(root) {
   try { [plans, org] = await Promise.all([db.select('plans', { select: 'id,name,price,billing_period', order: 'sort_order.asc' }), db.one('org_settings', { select: 'name,phone,address' })]); } catch { /* offline */ }
   org ||= {};
   root.innerHTML = `<div class="join-card">
-    <div class="brand big"><span class="logo-mark">C</span><div><strong>${esc(org.name || 'CoLab Point')}</strong><small>Membership joining form</small></div></div>
+    <div class="brand big" style="display:grid;gap:6px"><img class="wordmark" src="/brand/wordmark-dark.png" alt="${esc(org.name || 'CoLab Point')}"><small class="muted">Membership joining form</small></div>
     <form class="form grid" id="join-form">
       ${field('full_name', 'Full name', { required: true, span: 2 })}
       ${field('phone', 'Mobile number', { required: true, placeholder: '03xx xxxxxxx' })}${field('whatsapp', 'WhatsApp (if different)')}
@@ -31,7 +31,7 @@ export default async function join(root) {
     d.source = 'online'; d.status = 'pending';
     guard(e.submitter, async () => {
       await db.insertQuiet('registrations', d);
-      root.querySelector('.join-card').innerHTML = `<div class="brand big"><span class="logo-mark">C</span><div><strong>${esc(org.name || 'CoLab Point')}</strong><small>Thank you!</small></div></div>
+      root.querySelector('.join-card').innerHTML = `<div class="brand big"><img class="wordmark" src="/brand/wordmark-dark.png" alt="${esc(org.name || 'CoLab Point')}"></div>
         <h2 style="font-size:22px">Shukriya, ${esc(d.full_name.split(' ')[0])}! 🎉</h2>
         <p class="muted">Your details have reached our front desk. We will confirm your seat and share the payment details shortly.</p>
         ${org.phone ? `<a class="btn dark" target="_blank" rel="noopener" href="${waLink(org.phone, `Assalam-o-Alaikum, I just filled the joining form. My name is ${d.full_name}.`)}">Message us on WhatsApp</a>` : ''}
