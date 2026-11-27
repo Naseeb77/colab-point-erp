@@ -1,0 +1,198 @@
+{
+  "elementor_globals": {
+    "primary": "#4DAADC",
+    "secondary": "#222423",
+    "text": "#5C5E5D",
+    "accent": "#3A627B",
+    "9754ce6": "#04243C",
+    "0b816ce": "#417D9F",
+    "68f7a60": "#FFFFFF",
+    "3d0806e": "#000000",
+    "6d4db49": "#02010100",
+    "73291de": "#2485BC",
+    "5c97be4": "#F2F5FF",
+    "eaf8337": "#4997CF",
+    "02eb6c5": "#06ACBA",
+    "5230fc7": "#1F1F1E"
+  },
+  "top_hex_in_css": [
+    [
+      "#18012c",
+      111
+    ],
+    [
+      "#0056ff",
+      56
+    ],
+    [
+      "#ffffff",
+      22
+    ],
+    [
+      "#868e96",
+      19
+    ],
+    [
+      "#383838",
+      18
+    ],
+    [
+      "#3e3e3e",
+      16
+    ],
+    [
+      "#007bff",
+      15
+    ],
+    [
+      "#1d62af",
+      15
+    ],
+    [
+      "#464545",
+      15
+    ],
+    [
+      "#e9ecef",
+      14
+    ],
+    [
+      "#494849",
+      13
+    ],
+    [
+      "#ed552d",
+      13
+    ],
+    [
+      "#f4f4f4",
+      12
+    ],
+    [
+      "#5b5b5b",
+      12
+    ],
+    [
+      "#eb3449",
+      12
+    ],
+    [
+      "#06acba",
+      11
+    ],
+    [
+      "#28a745",
+      11
+    ],
+    [
+      "#17a2b8",
+      11
+    ],
+    [
+      "#ffc107",
+      11
+    ],
+    [
+      "#dc3545",
+      11
+    ]
+  ],
+  "logos": [
+    {
+      "url": "https://colabpoint.com/wp-content/uploads/2024/06/logo_color_1_2x.png",
+      "error": "cannot identify image file <_io.BytesIO object at 0x788908fa9210>"
+    },
+    {
+      "url": "https://colabpoint.com/wp-content/uploads/2024/05/Web-Logo-II.png",
+      "file": "logo-1.png"
+    },
+    {
+      "url": "https://lh3.googleusercontent.com/places/ANXAkqHYxpffnJLyjPOTxT6m0dQodR_YQ7hkC1YudYi1dTQdMlz2YvJxiBN9_V0rizHny_buBn2HDm4DVPAFnwPolGO5DJED91T_smo=s1600-w300-h300",
+      "file": "logo-2.png"
+    },
+    {
+      "url": "https://colabpoint.com/wp-content/uploads/2025/03/cropped-logoicon-32x32.png",
+      "file": "logo-3.png"
+    }
+  ],
+  "logo_colors": {
+    "logo-1.png": [
+      {
+        "hex": "#8c98c8",
+        "share": 0.224
+      },
+      {
+        "hex": "#99b5d6",
+        "share": 0.224
+      },
+      {
+        "hex": "#9ec2dc",
+        "share": 0.167
+      },
+      {
+        "hex": "#a6d5e5",
+        "share": 0.141
+      },
+      {
+        "hex": "#a1cae0",
+        "share": 0.125
+      },
+      {
+        "hex": "#ace2ed",
+        "share": 0.12
+      }
+    ],
+    "logo-2.png": [
+      {
+        "hex": "#231a15",
+        "share": 0.211
+      },
+      {
+        "hex": "#c7a88e",
+        "share": 0.202
+      },
+      {
+        "hex": "#b1927a",
+        "share": 0.201
+      },
+      {
+        "hex": "#48352a",
+        "share": 0.18
+      },
+      {
+        "hex": "#e3c7b1",
+        "share": 0.106
+      },
+      {
+        "hex": "#7f6351",
+        "share": 0.1
+      }
+    ],
+    "logo-3.png": [
+      {
+        "hex": "#1d3b9f",
+        "share": 0.227
+      },
+      {
+        "hex": "#1563a8",
+        "share": 0.181
+      },
+      {
+        "hex": "#1274ac",
+        "share": 0.166
+      },
+      {
+        "hex": "#0c8db2",
+        "share": 0.154
+      },
+      {
+        "hex": "#0f80af",
+        "share": 0.147
+      },
+      {
+        "hex": "#09a0b7",
+        "share": 0.124
+      }
+    ]
+  }
+}
