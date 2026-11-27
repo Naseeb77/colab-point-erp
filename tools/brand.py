@@ -4,7 +4,7 @@ import json, re, io, urllib.request, collections, os
 from PIL import Image
 
 SITE = "https://colabpoint.com/"
-UA = {"User-Agent": "Mozilla/5.0 (CoLab Point brand sync)"}
+UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36", "Accept": "image/png,image/*;q=0.8,*/*;q=0.5"}
 OUT = "web/brand"; ICONS = "web/icons"
 os.makedirs(OUT, exist_ok=True); os.makedirs(ICONS, exist_ok=True)
 
@@ -27,16 +27,18 @@ for m in re.finditer(r'<img[^>]+src=["\']([^"\']+)["\'][^>]*>', html):
     tag, src = m.group(0), m.group(1)
     if "logo" in tag.lower() or "logo" in src.lower():
         logos.append(src)
+logos += ["https://colabpoint.com/wp-content/uploads/2025/03/cropped-logoicon.png", "https://colabpoint.com/wp-content/uploads/2025/03/cropped-logoicon-270x270.png", "https://colabpoint.com/wp-content/uploads/2025/03/cropped-logoicon-192x192.png"]
 icon = re.search(r'<link[^>]+rel=["\'](?:apple-touch-icon|icon)["\'][^>]+href=["\']([^"\']+)', html)
 if icon: logos.append(icon.group(1))
 logos = list(dict.fromkeys(logos))
 
 saved = []
-for i, u in enumerate(logos[:4]):
+for i, u in enumerate(logos[:8]):
     try:
         data = get(u if u.startswith("http") else SITE.rstrip("/") + u)
         ext = ".svg" if u.lower().endswith(".svg") else ".png"
         name = f"logo-{i}{ext}"
+        open(f"{OUT}/raw-{i}.bin", "wb").write(data[:200000])
         if ext == ".png":
             Image.open(io.BytesIO(data)).convert("RGBA").save(f"{OUT}/{name}")
         else:
@@ -61,6 +63,15 @@ for s in saved:
         report["logo_colors"][s["file"]] = dominant(f"{OUT}/{s['file']}")
         if main is None: main = f"{OUT}/{s['file']}"
 
+squares = []
+for sv in saved:
+    f = sv.get("file", "")
+    if f.endswith(".png"):
+        im = Image.open(f"{OUT}/{f}")
+        if abs(im.width - im.height) <= 2: squares.append((im.width, f))
+if squares:
+    main = f"{OUT}/{max(squares)[1]}"
+report["icon_source"] = main
 if main:
     logo = Image.open(main).convert("RGBA")
     bbox = logo.getbbox()
